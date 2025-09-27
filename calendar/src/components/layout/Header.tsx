@@ -1,4 +1,4 @@
-import MenuIcon from '../ui/MenuIcon'
+import { MenuIcon } from '../ui'
 
 const Header = () => (
   <div className="fixed top-0 left-0 p-4 z-10">

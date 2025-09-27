@@ -1,12 +1,12 @@
-import Checkbox from './ui/Checkbox'
+import { Checkbox } from './ui'
 
 const TaskBlock = () => (
-  <div className="mb-12">
+  <div className="pb-16">
     {/* Header Section - 2x2 Grid Layout */}
-    <div className="flex justify-between mb-4 px-4">
+    <div className="flex justify-between mb-6 px-4">
       {/* Left Column - Title and Group */}
       <div className="flex flex-col">
-        <h2 className="text-base font-semibold text-black font-inter mb-1">
+        <h2 className="text-base font-semibold text-black font-inter mb-3">
           Block Title
         </h2>
         <div className="bg-[#EEFFE7] px-3 py-1 rounded-full w-fit">
@@ -53,9 +53,6 @@ const TaskBlock = () => (
         </span>
       </div>
     </div>
-    
-    {/* Separator Line */}
-    <div className="w-full h-px bg-black mt-12"></div>
   </div>
 )
 
