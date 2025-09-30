@@ -56,7 +56,7 @@ export class AuthStack extends cdk.Stack {
       },
     });
 
-    // Create User Pool Client (after domain for proper dependency)
+    // Create User Pool Client
     this.userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
       userPool: this.userPool,
       userPoolClientName: `web-client-${props.stage}`,
@@ -78,63 +78,18 @@ export class AuthStack extends cdk.Stack {
         callbackUrls: [
           'http://localhost:3000/callback', // For development
           'http://localhost:5173/callback', // For Vite dev server
-          ...(props.stage === 'prod' ? ['https://your-domain.com/callback'] : []),
+          ...(props.stage === 'prod' ? ['https://temp-domain.com/callback'] : []),
         ],
         logoutUrls: [
           'http://localhost:3000/logout', // For development
           'http://localhost:5173/logout', // For Vite dev server
-          ...(props.stage === 'prod' ? ['https://your-domain.com/logout'] : []),
+          ...(props.stage === 'prod' ? ['https://temp-domain.com/logout'] : []),
         ],
       },
       supportedIdentityProviders: [
         cognito.UserPoolClientIdentityProvider.COGNITO,
-        // Google will be added conditionally
       ],
     });
-
-    // Conditionally add Google Identity Provider if parameters exist
-    // This allows deployment without Google OAuth initially
-    const createGoogleProvider = new cdk.CfnCondition(this, 'CreateGoogleProvider', {
-      expression: cdk.Fn.conditionNot(
-        cdk.Fn.conditionEquals(
-          cdk.Fn.ref('GoogleClientIdParam'),
-          'PLACEHOLDER'
-        )
-      ),
-    });
-
-    const googleClientIdParam = new cdk.CfnParameter(this, 'GoogleClientIdParam', {
-      type: 'String',
-      description: 'Google OAuth Client ID (set to PLACEHOLDER to skip Google setup)',
-      default: 'PLACEHOLDER',
-      noEcho: false,
-    });
-
-    const googleClientSecretParam = new cdk.CfnParameter(this, 'GoogleClientSecretParam', {
-      type: 'String',
-      description: 'Google OAuth Client Secret (set to PLACEHOLDER to skip Google setup)',
-      default: 'PLACEHOLDER',
-      noEcho: true,
-    });
-
-    const googleProvider = new cognito.UserPoolIdentityProviderGoogle(this, 'GoogleProvider', {
-      userPool: this.userPool,
-      clientId: googleClientIdParam.valueAsString,
-      clientSecret: googleClientSecretParam.valueAsString,
-      scopes: ['email', 'profile', 'openid'],
-      attributeMapping: {
-        email: cognito.ProviderAttribute.GOOGLE_EMAIL,
-        givenName: cognito.ProviderAttribute.GOOGLE_GIVEN_NAME,
-        familyName: cognito.ProviderAttribute.GOOGLE_FAMILY_NAME,
-        profilePicture: cognito.ProviderAttribute.GOOGLE_PICTURE,
-      },
-    });
-
-    // Apply condition to Google provider
-    (googleProvider.node.defaultChild as cdk.CfnResource).cfnOptions.condition = createGoogleProvider;
-
-    // Update client to include Google provider when it exists
-    this.userPoolClient.node.addDependency(googleProvider);
 
     // Store important values in SSM Parameter Store for other stacks
     new ssm.StringParameter(this, 'UserPoolIdParameter', {
@@ -156,31 +111,31 @@ export class AuthStack extends cdk.Stack {
     });
 
     // Output important values
-    new cdk.CfnOutput(this, 'UserPoolId', {
+    new cdk.CfnOutput(this, 'UserPoolIdOutput', {
       value: this.userPool.userPoolId,
       description: 'Cognito User Pool ID',
       exportName: `Auth-${props.stage}-UserPoolId`,
     });
 
-    new cdk.CfnOutput(this, 'UserPoolClientId', {
+    new cdk.CfnOutput(this, 'UserPoolClientIdOutput', {
       value: this.userPoolClient.userPoolClientId,
       description: 'Cognito User Pool Client ID',
       exportName: `Auth-${props.stage}-UserPoolClientId`,
     });
 
-    new cdk.CfnOutput(this, 'UserPoolDomain', {
+    new cdk.CfnOutput(this, 'UserPoolDomainOutput', {
       value: this.userPoolDomain.domainName,
       description: 'Cognito User Pool Domain',
       exportName: `Auth-${props.stage}-UserPoolDomain`,
     });
 
-    new cdk.CfnOutput(this, 'AuthUrl', {
-      value: `https://${this.userPoolDomain.domainName}.auth.${cdk.Aws.REGION}.amazoncognito.com/login?client_id=${this.userPoolClient.userPoolClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:3000/callback`,
+    new cdk.CfnOutput(this, 'AuthUrlOutput', {
+      value: `https://${this.userPoolDomain.domainName}.auth.${cdk.Aws.REGION}.amazoncognito.com/login?client_id=${this.userPoolClient.userPoolClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173/callback`,
       description: 'Authentication URL for development',
       exportName: `Auth-${props.stage}-AuthUrl`,
     });
 
-    new cdk.CfnOutput(this, 'Region', {
+    new cdk.CfnOutput(this, 'RegionOutput', {
       value: cdk.Aws.REGION,
       description: 'AWS Region',
       exportName: `Auth-${props.stage}-Region`,

@@ -1,6 +1,9 @@
 import './App.css'
+import './config/auth' // Initialize Amplify configuration
 import { useState } from 'react'
 import { Header, MainContent, Sidebar } from './components'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -10,11 +13,15 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header onMenuClick={handleMenuClick} />
-      <MainContent />
-      <Sidebar isOpen={isSidebarOpen} />
-    </div>
+    <AuthProvider>
+      <ProtectedRoute>
+        <div className="min-h-screen bg-white">
+          <Header onMenuClick={handleMenuClick} />
+          <MainContent />
+          <Sidebar isOpen={isSidebarOpen} />
+        </div>
+      </ProtectedRoute>
+    </AuthProvider>
   )
 }
 

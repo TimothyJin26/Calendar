@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ReactLogo from '../../assets/react.svg'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface SidebarProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
   const [showAddBoard, setShowAddBoard] = useState(false)
   const [showAddConnection, setShowAddConnection] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     if (isOpen) {
@@ -34,8 +36,8 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
   return (
     <>
       {/* Sidebar */}
-      <div className="fixed top-16 left-4 h-[calc(100vh-4rem)] w-80 bg-white z-40 overflow-y-auto">
-        <div className="p-6 text-left">
+  <div className="fixed top-16 left-4 h-[calc(100vh-4rem)] w-80 bg-white z-40 flex flex-col">
+  <div className="p-6 text-left flex-1 overflow-auto">
           {/* Boards Section */}
           <div className="mb-8">
             <h2 className="text-[18px] font-semibold font-inter text-black mb-6 text-left">
@@ -113,6 +115,24 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+        
+        {/* Sign Out Section - Fixed to bottom */}
+        <div className="p-6 border-t border-gray-100 flex-shrink-0">
+          <div className="space-y-3">
+            {/* User Info */}
+            <div className="text-sm text-gray-600 font-inter text-left">
+              {user?.signInDetails?.loginId}
+            </div>
+            
+            {/* Sign Out Button */}
+            <button
+              onClick={signOut}
+              className="text-[16px] font-medium font-inter text-gray-700 hover:text-red-600 transition-colors duration-200 text-left w-full"
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       </div>
