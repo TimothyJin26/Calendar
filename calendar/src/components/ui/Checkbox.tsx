@@ -23,7 +23,7 @@ const Checkbox = ({ checked: controlledChecked, onChange }: CheckboxProps) => {
   return (
     <button
       onClick={handleClick}
-      className="w-[16px] h-[16px] border-2 border-black rounded-none flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+      className="w-[14px] h-[14px] border-2 border-black rounded-none flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
       type="button"
     >
       {isChecked && (

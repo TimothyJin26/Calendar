@@ -95,7 +95,7 @@ const MainContent = () => {
             <div className="transition-transform duration-300 ease-in-out group-hover:rotate-12 group-hover:scale-110">
               <img src={CalendarAllSvg} alt="Calendar" className="w-6 h-6" />
             </div>
-            <span className="text-2xl font-normal font-inter text-black transition-colors duration-300 ease-in-out group-hover:text-blue-600 group-hover:font-medium relative whitespace-nowrap">
+            <span className="text-[23px] font-normal font-inter text-black transition-colors duration-300 ease-in-out group-hover:text-blue-600 group-hover:font-medium relative whitespace-nowrap">
               {stickyLabel}
               <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 ease-in-out group-hover:w-full"></div>
             </span>
@@ -115,7 +115,7 @@ const MainContent = () => {
                   <div>
                     <img src={CalendarAllSvg} alt="Calendar" className="w-6 h-6" />
                   </div>
-                  <span className="text-2xl font-normal font-inter text-gray-600 whitespace-nowrap">
+                  <span className="text-[23px] font-normal font-inter text-gray-600 whitespace-nowrap">
                     {taskBlock.dueDate}
                   </span>
                 </div>
