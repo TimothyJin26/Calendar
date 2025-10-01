@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ReactLogo from '../../assets/react.svg'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface SidebarProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
   const [showAddBoard, setShowAddBoard] = useState(false)
   const [showAddConnection, setShowAddConnection] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     if (isOpen) {
@@ -34,8 +36,8 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
   return (
     <>
       {/* Sidebar */}
-      <div className="fixed top-16 left-4 h-[calc(100vh-4rem)] w-80 bg-white z-40 overflow-y-auto">
-        <div className="p-6 text-left">
+      <div className="fixed top-16 left-4 h-[calc(100vh-4rem)] w-64 bg-white z-40 flex flex-col">
+        <div className="p-6 text-left flex-1 overflow-auto">
           {/* Boards Section */}
           <div className="mb-8">
             <h2 className="text-[18px] font-semibold font-inter text-black mb-6 text-left">
@@ -47,10 +49,13 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
                 <button
                   key={board}
                   onClick={() => setSelectedBoard(board)}
-                  className={`block pl-5 text-left w-full hover:opacity-70 transition-all duration-500 text-[16px] font-inter text-black transform ${
-                    selectedBoard === board ? 'font-semibold' : 'font-medium'
-                  } ${isAnimating ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}
-                  style={{ transitionDelay: `${index * 25}ms` }}
+                  className={`block pl-5 text-left w-full hover:opacity-70 text-[16px] font-inter text-black transform ${
+                    isAnimating ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                  }`}
+                  style={{ 
+                    transition: `transform 500ms ease ${index * 25}ms, opacity 500ms ease ${index * 25}ms`,
+                    fontWeight: selectedBoard === board ? '600' : '500'
+                  }}
                 >
                   {board}
                 </button>
@@ -66,6 +71,7 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
                   className={`text-[15px] pl-5 font-medium font-inter text-[#c9c9c9] hover:text-[#afafaf] transition-all text-left ${
                     showAddBoard ? 'opacity-100' : 'opacity-0'
                   }`}
+                  style={{ fontWeight: '500' }}
                 >
                   + Add Board
                 </button>
@@ -83,10 +89,13 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
               {connections.map((connection, index) => (
                 <button
                   key={connection.name}
-                  className={`flex pl-1 items-center justify-start gap-2 text-[16px] font-medium font-inter text-black hover:opacity-70 transition-all duration-500 text-left w-full transform ${
+                  className={`flex pl-1 items-center justify-start gap-2 text-[16px] font-inter text-black hover:opacity-70 text-left w-full transform ${
                     isAnimating ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                   }`}
-                  style={{ transitionDelay: `${(boards.length + 1 + index) * 25}ms` }}
+                  style={{ 
+                    transition: `transform 500ms ease ${(boards.length + 1 + index) * 25}ms, opacity 500ms ease ${(boards.length + 1 + index) * 25}ms`,
+                    fontWeight: '500'
+                  }}
                 >
                   <img 
                     src={connection.logo} 
@@ -104,15 +113,35 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
                 onMouseLeave={() => setShowAddConnection(false)}
               >
                 <button
-                  className={`flex pl-1 items-center justify-start gap-2 text-[15px] font-medium font-inter text-[#c9c9c9] hover:text-[#afafaf] transition-all text-left ${
+                  className={`flex pl-1 items-center justify-start gap-2 text-[15px] font-inter text-[#c9c9c9] hover:text-[#afafaf] transition-all text-left ${
                     showAddConnection ? 'opacity-100' : 'opacity-0'
                   }`}
+                  style={{ fontWeight: '500' }}
                 >
                   <div className="w-5 h-5 border border-dashed border-gray-400 rounded"></div>
                   + Add Connection
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+        
+        {/* Sign Out Section - Fixed to bottom */}
+        <div className="p-6 border-t border-gray-100 flex-shrink-0">
+          <div className="space-y-3">
+            {/* User Info */}
+            <div className="text-sm text-gray-600 font-inter text-left">
+              {user?.signInDetails?.loginId}
+            </div>
+            
+            {/* Sign Out Button */}
+            <button
+              onClick={signOut}
+              className="text-[16px] font-inter text-gray-700 hover:text-red-600 transition-colors duration-200 text-left w-full"
+              style={{ fontWeight: '500' }}
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       </div>
