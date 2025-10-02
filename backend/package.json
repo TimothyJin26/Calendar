@@ -5,8 +5,9 @@
     "backend": "bin/backend.js"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
+    "build": "npm run clean && tsc",
+    "build:watch": "tsc -w",
+    "clean": "rm -rf dist && find . -name '*.js' -not -name 'jest.config.js' -not -path './node_modules/*' -delete && find . -name '*.d.ts' -not -path './node_modules/*' -delete",
     "test": "jest",
     "cdk": "cdk"
   },
@@ -20,7 +21,11 @@
     "typescript": "~5.6.3"
   },
   "dependencies": {
+    "@types/aws-lambda": "^8.10.153",
+    "@types/pg": "^8.15.5",
     "aws-cdk-lib": "^2.215.0",
-    "constructs": "^10.4.2"
+    "aws-sdk": "^2.1692.0",
+    "constructs": "^10.4.2",
+    "pg": "^8.16.3"
   }
 }

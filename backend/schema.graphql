@@ -1,0 +1,127 @@
+type Board @aws_cognito_user_pools {
+  id: ID!
+  title: String!
+  userId: String!
+  tasks: [Task!]!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Task @aws_cognito_user_pools {
+  id: ID!
+  title: String!
+  boardId: String!
+  groupId: String
+  group: Group
+  dueDate: AWSDateTime
+  subtasks: [Subtask!]!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Subtask @aws_cognito_user_pools {
+  id: ID!
+  title: String!
+  taskId: String!
+  dueDate: AWSDateTime
+  completed: Boolean!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Group @aws_cognito_user_pools {
+  id: ID!
+  name: String!
+  color: String
+  userId: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input CreateBoardInput {
+  title: String!
+}
+
+input UpdateBoardInput {
+  id: ID!
+  title: String
+}
+
+input CreateTaskInput {
+  title: String!
+  boardId: String!
+  groupId: String
+  dueDate: AWSDateTime
+}
+
+input UpdateTaskInput {
+  id: ID!
+  title: String
+  groupId: String
+  dueDate: AWSDateTime
+}
+
+input CreateSubtaskInput {
+  title: String!
+  taskId: String!
+  dueDate: AWSDateTime
+}
+
+input UpdateSubtaskInput {
+  id: ID!
+  title: String
+  dueDate: AWSDateTime
+  completed: Boolean
+}
+
+input CreateGroupInput {
+  name: String!
+  color: String
+}
+
+input UpdateGroupInput {
+  id: ID!
+  name: String
+  color: String
+}
+
+type Query {
+  # Board queries
+  getBoard(id: ID!): Board
+  listBoards: [Board!]!
+  
+  # Task queries
+  getTask(id: ID!): Task
+  listTasksByBoard(boardId: String!): [Task!]!
+  
+  # Group queries
+  getGroup(id: ID!): Group
+  listGroups: [Group!]!
+}
+
+type Mutation {
+  # Board mutations
+  createBoard(input: CreateBoardInput!): Board!
+  updateBoard(input: UpdateBoardInput!): Board!
+  deleteBoard(id: ID!): Boolean!
+  
+  # Task mutations
+  createTask(input: CreateTaskInput!): Task!
+  updateTask(input: UpdateTaskInput!): Task!
+  deleteTask(id: ID!): Boolean!
+  
+  # Subtask mutations
+  createSubtask(input: CreateSubtaskInput!): Subtask!
+  updateSubtask(input: UpdateSubtaskInput!): Subtask!
+  deleteSubtask(id: ID!): Boolean!
+  
+  # Group mutations
+  createGroup(input: CreateGroupInput!): Group!
+  updateGroup(input: UpdateGroupInput!): Group!
+  deleteGroup(id: ID!): Boolean!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
