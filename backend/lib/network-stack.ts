@@ -158,10 +158,5 @@ export class NetworkStack extends cdk.Stack {
       exportName: `Network-${props.stage}-BastionHostId`,
     });
 
-    new cdk.CfnOutput(this, 'BastionHostPublicIpOutput', {
-      value: this.bastionHost.instancePublicIp,
-      description: 'Bastion Host Public IP',
-      exportName: `Network-${props.stage}-BastionHostPublicIp`,
-    });
   }
 }
