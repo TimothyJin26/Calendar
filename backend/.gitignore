@@ -1,6 +1,8 @@
-*.js
+# Compiled cdk output
+dist/
+
+# Jest config
 !jest.config.js
-*.d.ts
 node_modules
 
 # CDK asset staging directory
