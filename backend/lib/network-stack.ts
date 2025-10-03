@@ -93,9 +93,6 @@ export class NetworkStack extends cdk.Stack {
       service: ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
       subnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
-
-    // Allow bastion host to connect to database
-    this.bastionHost.allowSshAccessFrom(ec2.Peer.anyIpv4());
     
     // Allow bastion host to connect to database
     this.bastionHost.connections.allowTo(
