@@ -1,7 +1,7 @@
-# Compiled output
+# Compiled cdk output
 dist/
 
-# Keep jest config
+# Jest config
 !jest.config.js
 node_modules
 
