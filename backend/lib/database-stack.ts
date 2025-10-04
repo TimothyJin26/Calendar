@@ -19,7 +19,7 @@ export class DatabaseStack extends cdk.Stack {
     // Create a custom parameter group to configure PostgreSQL settings
     const parameterGroup = new rds.ParameterGroup(this, 'PostgresParameterGroup', {
       engine: rds.DatabaseInstanceEngine.postgres({
-        version: rds.PostgresEngineVersion.VER_16_4,
+        version: rds.PostgresEngineVersion.VER_17_6,
       }),
       description: `PostgreSQL parameter group for ${props.stage}`,
       parameters: {
