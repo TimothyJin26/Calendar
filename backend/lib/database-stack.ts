@@ -38,7 +38,7 @@ export class DatabaseStack extends cdk.Stack {
     this.database = new rds.DatabaseInstance(this, 'PostgresInstance', {
       instanceIdentifier: `calendar-db-${props.stage}`,
       engine: rds.DatabaseInstanceEngine.postgres({
-        version: rds.PostgresEngineVersion.VER_16_4,
+        version: rds.PostgresEngineVersion.VER_17_6,
       }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO), // Smallest instance
       credentials: rds.Credentials.fromGeneratedSecret('postgres', {
