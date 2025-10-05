@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
+import { generateClient } from 'aws-amplify/api'
+import { listBoards } from '../../graphql/queries'
 import ReactLogo from '../../assets/react.svg'
 import { useAuth } from '../../contexts/AuthContext'
+
+const client = generateClient()
 
 interface SidebarProps {
   isOpen: boolean
@@ -22,7 +26,26 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
     }
   }, [isOpen])
 
-  const boards = ['UBC 2025 Term 1', 'nwPlus', 'Amazon']
+  useEffect(() => {
+    const fetchBoards = async () => {
+      try {
+        const result = await client.graphql({
+          query: listBoards
+        })
+        
+        if (result.data?.listBoards) {
+          const boardTitles = result.data.listBoards.map((board: any) => board.title)
+          setBoards(boardTitles)
+        }
+      } catch (error) {
+        console.error('Error fetching boards:', error)
+      }
+    }
+
+    fetchBoards()
+  }, [])
+
+  const [boards, setBoards] = useState<string[]>(['UBC 2025 Term 1', 'nwPlus', 'Amazon'])
   const connections = [
     { name: 'Google Calendar', logo: ReactLogo },
     { name: 'GitHub', logo: ReactLogo },
