@@ -53,7 +53,6 @@ const MainContent = () => {
       for (let i = labeledBlocks.length - 1; i >= 0; i--) {
         const { blockIndex, label } = labeledBlocks[i]
         const taskBlockElement = taskBlockRefs.current[taskBlocks[blockIndex]?.id]
-        
         if (taskBlockElement) {
           const rect = taskBlockElement.getBoundingClientRect()
           
