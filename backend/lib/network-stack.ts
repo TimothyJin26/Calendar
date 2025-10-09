@@ -30,11 +30,6 @@ export class NetworkStack extends cdk.Stack {
         },
         {
           cidrMask: 24,
-          name: 'private',
-          subnetType: ec2.SubnetType.PRIVATE_ISOLATED, // Keep for compatibility, no NAT
-        },
-        {
-          cidrMask: 24,
           name: 'isolated',
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
