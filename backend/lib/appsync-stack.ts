@@ -54,7 +54,7 @@ export class AppSyncStack extends cdk.Stack {
       memorySize: 512,
       vpc: props.vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED, // Changed from PRIVATE_WITH_EGRESS during NAT removal
       },
       securityGroups: [props.lambdaSecurityGroup],
       environment: {
