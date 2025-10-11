@@ -1,5 +1,5 @@
 import './App.css'
-import './config/auth' // Initialize Amplify configuration
+import './config/amplify' // Initialize Amplify configuration
 import { useState } from 'react'
 import { Header, MainContent, Sidebar } from './components'
 import { AuthProvider } from './contexts/AuthContext'

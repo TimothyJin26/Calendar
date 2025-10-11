@@ -2,14 +2,19 @@ import TaskBlock from '../TaskBlock'
 import { Separator } from '../ui'
 import FilterSvg from '../../assets/filter.svg'
 import CalendarAllSvg from '../../assets/calendar_all.svg'
+import AddSvg from '../../assets/add.svg'
 import { useTaskBlocks } from '../../hooks/useTaskBlocks'
 import { useEffect, useState, useRef } from 'react'
 
 const MainContent = () => {
   const { taskBlocks, loading, error, handleTaskToggle } = useTaskBlocks()
   const [stickyLabel, setStickyLabel] = useState<string>('All')
+  const [showNewTaskButton, setShowNewTaskButton] = useState(false)
   const taskBlockRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const labelsRef = useRef<HTMLDivElement>(null)
+  const isAtTop = useRef(false)
+  const scrollUpCount = useRef(0)
+  const lastWheelTime = useRef(0)
 
   // Define which task blocks should have labels (all blocks for now)
   const labeledBlocks = taskBlocks.map((taskBlock, index) => ({
@@ -21,7 +26,27 @@ const MainContent = () => {
     const handleScroll = () => {
       if (!labelsRef.current) return
 
+      const currentScrollY = window.scrollY
       const stickyPosition = 112 // top-28 = 112px
+      
+      // Update isAtTop flag
+      if (currentScrollY === 0) {
+        if (!isAtTop.current) {
+          // Just reached the top - reset the scroll count
+          isAtTop.current = true
+          scrollUpCount.current = 0
+          lastWheelTime.current = 0
+        }
+      } else {
+        isAtTop.current = false
+        scrollUpCount.current = 0
+        lastWheelTime.current = 0
+        // Hide button when scrolled away
+        if (currentScrollY > 100 && showNewTaskButton) {
+          setShowNewTaskButton(false)
+        }
+      }
+      
       let activeLabel = labeledBlocks[0]?.label || 'All'
 
       // Check each labeled block from bottom to top to find which should be active
@@ -29,7 +54,6 @@ const MainContent = () => {
       for (let i = labeledBlocks.length - 1; i >= 0; i--) {
         const { blockIndex, label } = labeledBlocks[i]
         const taskBlockElement = taskBlockRefs.current[taskBlocks[blockIndex]?.id]
-        
         if (taskBlockElement) {
           const rect = taskBlockElement.getBoundingClientRect()
           
@@ -44,11 +68,42 @@ const MainContent = () => {
       setStickyLabel(activeLabel)
     }
 
+    const handleWheel = (e: WheelEvent) => {
+      const now = Date.now()
+      
+      // Dismiss button immediately on any scroll down
+      if (showNewTaskButton && e.deltaY > 0) {
+        setShowNewTaskButton(false)
+        scrollUpCount.current = 0
+        return
+      }
+      
+      // Only count scroll up attempts when at the top
+      if (isAtTop.current && e.deltaY < 0) {
+        // Only count as a new scroll gesture if it's been more than 50ms since last wheel event
+        // This filters out momentum scrolling which fires many events in quick succession
+        if (now - lastWheelTime.current > 50) {
+          scrollUpCount.current += 1
+          
+          // Show button on the second distinct scroll up gesture
+          if (scrollUpCount.current >= 2 && !showNewTaskButton) {
+            setShowNewTaskButton(true)
+          }
+        }
+        
+        lastWheelTime.current = now
+      }
+    }
+
     window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('wheel', handleWheel, { passive: true })
     handleScroll() // Initial call
 
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [taskBlocks, labeledBlocks])
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('wheel', handleWheel)
+    }
+  }, [taskBlocks, labeledBlocks, showNewTaskButton])
 
   if (loading) {
     return (
@@ -88,6 +143,22 @@ const MainContent = () => {
           </button>
         </div>
         
+        {/* New Task Button - Hidden above viewport, revealed when scrolling past top */}
+        <div 
+          className={`transition-all duration-300 ease-out ${
+            showNewTaskButton ? 'h-12 opacity-100' : 'h-0 opacity-0 overflow-hidden'
+          }`}
+        >
+          <div className="group mt-4">
+            <button className="px-4 text-left flex space-x-3 items-center cursor-pointer">
+              <img src={AddSvg} alt="Add Task" className="w-4 h-4" />
+              <span className="text-[#696969] font-inter text-sm">
+                New Task
+              </span>
+            </button>
+          </div>
+        </div>
+        
         {/* Task Blocks Container with Sidebar */}
         <div className="relative" ref={labelsRef}>
           {/* Sticky Label at Top */}
@@ -125,6 +196,16 @@ const MainContent = () => {
               {index < taskBlocks.length - 1 && <Separator />}
             </div>
           ))}
+          
+          {/* Add Task Button */}
+          <div className="group mt-4 mb-60">
+            <button className="px-4 text-left flex space-x-3 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer">
+              <img src={AddSvg} alt="Add Task" className="w-4 h-4" />
+              <span className="text-[#696969] font-inter text-sm">
+                New Task
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

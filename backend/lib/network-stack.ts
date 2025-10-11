@@ -21,7 +21,7 @@ export class NetworkStack extends cdk.Stack {
     this.vpc = new ec2.Vpc(this, 'ApplicationVpc', {
       vpcName: `calendar-vpc-${props.stage}`,
       maxAzs: 2, // Use 2 AZs for availability
-      natGateways: 1, // Minimal cost - use 1 NAT gateway
+      natGateways: 0, // No NAT gateway - use VPC endpoints instead for cost savings
       subnetConfiguration: [
         {
           cidrMask: 24,
@@ -30,11 +30,6 @@ export class NetworkStack extends cdk.Stack {
         },
         {
           cidrMask: 24,
-          name: 'private',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-        },
-        {
-          cidrMask: 28,
           name: 'isolated',
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
@@ -74,24 +69,13 @@ export class NetworkStack extends cdk.Stack {
     this.bastionHost.role.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
     );
-
-    // Add VPC endpoints for SSM (needed for Session Manager to work properly)
-    new ec2.InterfaceVpcEndpoint(this, 'SSMVpcEndpoint', {
+    
+    // Add Interface VPC Endpoints for Lambda to call AWS services without NAT Gateway
+    new ec2.InterfaceVpcEndpoint(this, 'SecretsManagerEndpoint', {
       vpc: this.vpc,
-      service: ec2.InterfaceVpcEndpointAwsService.SSM,
-      subnets: { subnetType: ec2.SubnetType.PUBLIC },
-    });
-
-    new ec2.InterfaceVpcEndpoint(this, 'SSMMessagesVpcEndpoint', {
-      vpc: this.vpc,
-      service: ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
-      subnets: { subnetType: ec2.SubnetType.PUBLIC },
-    });
-
-    new ec2.InterfaceVpcEndpoint(this, 'EC2MessagesVpcEndpoint', {
-      vpc: this.vpc,
-      service: ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
-      subnets: { subnetType: ec2.SubnetType.PUBLIC },
+      service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      subnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      privateDnsEnabled: true,
     });
     
     // Allow bastion host to connect to database
