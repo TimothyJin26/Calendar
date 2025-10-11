@@ -2,6 +2,7 @@ import TaskBlock from '../TaskBlock'
 import { Separator } from '../ui'
 import FilterSvg from '../../assets/filter.svg'
 import CalendarAllSvg from '../../assets/calendar_all.svg'
+import AddSvg from '../../assets/add.svg'
 import { useTaskBlocks } from '../../hooks/useTaskBlocks'
 import { useEffect, useState, useRef } from 'react'
 
@@ -148,9 +149,12 @@ const MainContent = () => {
             showNewTaskButton ? 'h-12 opacity-100' : 'h-0 opacity-0 overflow-hidden'
           }`}
         >
-          <div className="px-4 pb-4">
-            <button className="text-gray-700 hover:text-gray-900 font-inter text-sm">
-              New Task
+          <div className="group mt-4">
+            <button className="px-4 text-left flex space-x-3 items-center cursor-pointer">
+              <img src={AddSvg} alt="Add Task" className="w-4 h-4" />
+              <span className="text-[#696969] font-inter text-sm">
+                New Task
+              </span>
             </button>
           </div>
         </div>
@@ -192,6 +196,16 @@ const MainContent = () => {
               {index < taskBlocks.length - 1 && <Separator />}
             </div>
           ))}
+          
+          {/* Add Task Button */}
+          <div className="group mt-4 mb-60">
+            <button className="px-4 text-left flex space-x-3 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer">
+              <img src={AddSvg} alt="Add Task" className="w-4 h-4" />
+              <span className="text-[#696969] font-inter text-sm">
+                New Task
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
